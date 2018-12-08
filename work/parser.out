@@ -39,10 +39,12 @@ Rule 1     packets -> packet
 Rule 2     packets -> packets packet
 Rule 3     packet -> packet_begin packet_vars packet_end
 Rule 4     packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN
-Rule 5     packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN
+Rule 5     packet_end -> DECLARE_NET_MESSAGE_END LPAREN packet_scopes RPAREN
 Rule 6     packet_vars -> packet_var
 Rule 7     packet_vars -> packet_vars packet_var
 Rule 8     packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN
+Rule 9     packet_scopes -> packet_scopes COMMA ID
+Rule 10    packet_scopes -> ID
 
 Terminals, with rules where they appear
 
@@ -50,7 +52,7 @@ ASSIGN               :
 BREAK                : 
 CASE                 : 
 CHAR                 : 
-COMMA                : 4 5 8
+COMMA                : 4 8 9
 CONTINUE             : 
 DECLARE_NET_MESSAGE_ATOM_VAR : 8
 DECLARE_NET_MESSAGE_BEGIN : 4
@@ -62,7 +64,7 @@ ELSE                 :
 EQUAL                : 
 FLOAT                : 
 FOR                  : 
-ID                   : 4 4 5 5 8 8
+ID                   : 4 4 8 8 9 10
 IF                   : 
 INT                  : 
 LEFTBRACE            : 
@@ -89,6 +91,7 @@ Nonterminals, with rules where they appear
 packet               : 1 2
 packet_begin         : 3
 packet_end           : 3
+packet_scopes        : 5 9
 packet_var           : 6 7
 packet_vars          : 3 7
 packets              : 2 0
@@ -175,7 +178,7 @@ state 8
 
     (3) packet -> packet_begin packet_vars . packet_end
     (7) packet_vars -> packet_vars . packet_var
-    (5) packet_end -> . DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN
+    (5) packet_end -> . DECLARE_NET_MESSAGE_END LPAREN packet_scopes RPAREN
     (8) packet_var -> . DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN
 
     DECLARE_NET_MESSAGE_END shift and go to state 13
@@ -216,7 +219,7 @@ state 12
 
 state 13
 
-    (5) packet_end -> DECLARE_NET_MESSAGE_END . LPAREN ID COMMA ID RPAREN
+    (5) packet_end -> DECLARE_NET_MESSAGE_END . LPAREN packet_scopes RPAREN
 
     LPAREN          shift and go to state 16
 
@@ -237,79 +240,93 @@ state 15
 
 state 16
 
-    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN . ID COMMA ID RPAREN
+    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN . packet_scopes RPAREN
+    (9) packet_scopes -> . packet_scopes COMMA ID
+    (10) packet_scopes -> . ID
 
-    ID              shift and go to state 19
+    ID              shift and go to state 20
 
+    packet_scopes                  shift and go to state 19
 
 state 17
 
     (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID . COMMA ID RPAREN
 
-    COMMA           shift and go to state 20
+    COMMA           shift and go to state 21
 
 
 state 18
 
     (4) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID . RPAREN
 
-    RPAREN          shift and go to state 21
+    RPAREN          shift and go to state 22
 
 
 state 19
 
-    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID . COMMA ID RPAREN
+    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN packet_scopes . RPAREN
+    (9) packet_scopes -> packet_scopes . COMMA ID
 
-    COMMA           shift and go to state 22
+    RPAREN          shift and go to state 23
+    COMMA           shift and go to state 24
 
 
 state 20
 
-    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA . ID RPAREN
+    (10) packet_scopes -> ID .
 
-    ID              shift and go to state 23
+    RPAREN          reduce using rule 10 (packet_scopes -> ID .)
+    COMMA           reduce using rule 10 (packet_scopes -> ID .)
 
 
 state 21
+
+    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA . ID RPAREN
+
+    ID              shift and go to state 25
+
+
+state 22
 
     (4) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN .
 
     DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 4 (packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN .)
 
 
-state 22
-
-    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA . ID RPAREN
-
-    ID              shift and go to state 24
-
-
 state 23
 
-    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID . RPAREN
+    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN packet_scopes RPAREN .
 
-    RPAREN          shift and go to state 25
+    DECLARE_NET_MESSAGE_BEGIN reduce using rule 5 (packet_end -> DECLARE_NET_MESSAGE_END LPAREN packet_scopes RPAREN .)
+    $end            reduce using rule 5 (packet_end -> DECLARE_NET_MESSAGE_END LPAREN packet_scopes RPAREN .)
 
 
 state 24
 
-    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID . RPAREN
+    (9) packet_scopes -> packet_scopes COMMA . ID
 
-    RPAREN          shift and go to state 26
+    ID              shift and go to state 26
 
 
 state 25
+
+    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID . RPAREN
+
+    RPAREN          shift and go to state 27
+
+
+state 26
+
+    (9) packet_scopes -> packet_scopes COMMA ID .
+
+    RPAREN          reduce using rule 9 (packet_scopes -> packet_scopes COMMA ID .)
+    COMMA           reduce using rule 9 (packet_scopes -> packet_scopes COMMA ID .)
+
+
+state 27
 
     (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .
 
     DECLARE_NET_MESSAGE_END reduce using rule 8 (packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .)
     DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 8 (packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .)
-
-
-state 26
-
-    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN .
-
-    DECLARE_NET_MESSAGE_BEGIN reduce using rule 5 (packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN .)
-    $end            reduce using rule 5 (packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN .)
 

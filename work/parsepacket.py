@@ -143,12 +143,14 @@ TEMPLATE_IMPLEMENT_PACKET_SEND_ATOM = '''
     iStream.Reci((char *) (&m_##x), sizeof(m_##x));
 '''
 
-
 class Packet:
     def __init__(self,packet_name,packet_id):
         self.PacketName=packet_name
         self.PacketID=packet_id
         self.VarList=[]
+        self.ScopeList=[]
+    def ToDefine(self,index):
+        return "\t\t"+self.PacketName+"\t\t\t=\t"+str(index)+",\n"
     def ToDeclare(self):
         header_name = re.sub(r'[A-Z]',lambda x:"_"+x.group(0),self.PacketName)
         log = "//---------Declare Packet " + self.PacketName  + "\n"
@@ -228,12 +230,13 @@ def p_packet(p):
     p[0]=Packet(p[1]["packetname"],p[1]['packetid'])
     for tmp in p[2]:
         p[0].VarList.append(tmp)
+    p[0].ScopeList=p[3]
 def p_packet_begin(p):
     'packet_begin : DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN'
     p[0]={"packetname":p[3],"packetid":p[5]}
 def p_packet_end(p):
-    'packet_end : DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN'
-    p[0]={"packetname":p[3],"packetid":p[5]}
+    'packet_end : DECLARE_NET_MESSAGE_END LPAREN packet_scopes RPAREN'
+    p[0]=p[3]
 def p_packet_vars_2(p):
     'packet_vars : packet_var '
     p[0] = [p[1]]
@@ -244,6 +247,13 @@ def p_packet_vars_1(p):
 def p_packet_var(p):
     'packet_var : DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN'
     p[0]=PacketVar(p[3],p[5])
+def p_packet_scopes_1(p):
+    'packet_scopes : packet_scopes COMMA ID'
+    p[1].append(p[3])
+    p[0]=p[1]
+def p_packet_scopes_2(p):
+    'packet_scopes : ID'
+    p[0]=[p[1]]
 
 # Error rule for syntax errors
 def p_error(p):
@@ -255,11 +265,92 @@ parser = yacc.yacc(tabmodule='packet',debug=True)
 input_str = sys.stdin.read()
 result = parser.parse(input_str)
 
-# output
+# output cpp h file
 for packet in result:
-    f = open(packet.PacketName+".h",'w')
+    f = open("Build/"+packet.PacketName+".h",'w')
     f.write(packet.ToDeclare())
     f.close()
-    f = open(packet.PacketName+".cpp",'w')
+    f = open("Build/"+packet.PacketName+".cpp",'w')
     f.write(packet.ToImplement())
     f.close()
+# output messagedefine file
+message_define_begin='''
+#ifndef __MESSAGE_DEFINE_H__
+#define __MESSAGE_DEFINE_H__
+
+namespace	Messages
+{
+    enum MSG_DEFINE
+    {
+'''
+message_define_end='''
+    };
+};
+
+#endif
+'''
+message_packet_define='''
+	MESSAGE_NONE					= 0,
+'''
+message_define_str=message_define_begin
+message_define_index=0
+for packet in result:
+    message_define_str+=packet.ToDefine(message_define_index)
+    message_define_index=message_define_index+1
+message_define_str+=message_define_end
+f = open("Build/MessageDefine.h",'w')
+f.write(message_define_str)
+f.close()
+#output register file
+SCOPE_DEFINE_LIST = [
+    '_CLIENT',
+    '_LOGIN'
+]
+client_list=[]
+login_list=[]
+register_list={}
+for packet in result:
+    key_str=""
+    temp_list=[]
+    for index,scope in enumerate(SCOPE_DEFINE_LIST):
+        if scope in packet.ScopeList:
+            temp_list.append(index)
+    temp_list=tuple(temp_list)
+    if not register_list.has_key(temp_list):
+        register_list[temp_list]=[]
+    register_list[temp_list].append(packet)
+            
+message_register_begin='''
+#include MessageFactoryManager.h"
+'''
+message_register_init_begin='''
+BOOL MessageFactoryManager::Init()
+{
+'''
+message_register_init_end='''
+}
+
+'''
+message_register_str=message_register_begin
+for key,value in register_list.items():
+    message_register_str+='\n#if defined('+SCOPE_DEFINE_LIST[key[0]]+')'
+    for index in range(1,len(key)):
+        message_register_str+='|| defined('+SCOPE_DEFINE_LIST[key[index]]+')'
+    message_register_str+="\n"
+    for packet in value:
+        message_register_str+='#include "'+packet.PacketName+'.h"'+"\n"
+    message_register_str+="#endif"+"\n"
+message_register_str+=message_register_init_begin
+for key,value in register_list.items():
+    message_register_str+='\n#if defined('+SCOPE_DEFINE_LIST[key[0]]+')'
+    for index in range(1,len(key)):
+        message_register_str+='|| defined('+SCOPE_DEFINE_LIST[key[index]]+')'
+    message_register_str+="\n"
+    for packet in value:
+        message_register_str+="   ADD_MSG_FACTORY("+packet.PacketName+")"+"\n"
+    message_register_str+="#endif"+"\n"
+message_register_str+=message_register_init_end
+
+f = open("Build/MessageRegister.cpp",'w')
+f.write(message_register_str)
+f.close()
