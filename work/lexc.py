@@ -9,15 +9,14 @@ tokens = [
    'DIVIDE',
    'LPAREN',
    'RPAREN',
-   'ID',
    'COMMA',
+   'ID',
    'SEMICOLON',
    'LEFTBRACE',
    'RIGHTBRACE',
    'ASSIGN',
    'EQUAL',
 ]
-
 reserved={
     'while' : 'WHILE',
     'else' : 'ELSE',
@@ -79,7 +78,7 @@ def t_ID(t):
     return t
 #
 def t_NUMBER(t):
-  r'\d+'
+  r'\d+(\.\d*)?'
   try:
     t.value = int(t.value)
   except ValueError:
@@ -89,22 +88,23 @@ def t_NUMBER(t):
 #
 # Define a rule so we can track line numbers
 def t_newline(t):
-  r'\n+'
-  t.lexer.lineno += len(t.value)
+  r'\r?\n'
+  t.lexer.lineno += 1
 
 # A string containing ignored characters (spaces and tabs)
 t_ignore  = ' \t'
 
 # Error handling rule
 def t_error(t):
-  print ("Illegal character '%s'" , t.value[0])
+  print ("Illegal character "+str(t.value[0])+" at line "+str(t.lineno)+" at pos "+str(t.lexpos))
   t.lexer.skip(1)
+
 def t_COMMENT(t):
-    r'\#.*'
+    r'//.*|\#.*'
     pass
 # No return value. Token discarded
 # Build the lexer
-lexer=lex.lex()
+
 
 # # Test it out
 # data = "3 + 4"

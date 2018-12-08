@@ -1,9 +1,15 @@
-import lexc
+from lexc import *
 
-tokens_packet = [
-    'DECLARE_NET_MESSAGE_BEGIN',
-    'DECLARE_NET_MESSAGE_ATOM_VAR',
-    'DECLARE_NET_MESSAGE_END',
-]
+reserved_packet = {
+    'DECLARE_NET_MESSAGE_BEGIN' : 'DECLARE_NET_MESSAGE_BEGIN',
+    'DECLARE_NET_MESSAGE_ATOM_VAR' : 'DECLARE_NET_MESSAGE_ATOM_VAR',
+    'DECLARE_NET_MESSAGE_END' : 'DECLARE_NET_MESSAGE_END'
+}
+t_DECLARE_NET_MESSAGE_BEGIN = r'DECLARE_NET_MESSAGE_BEGIN'
+t_DECLARE_NET_MESSAGE_ATOM_VAR = r'DECLARE_NET_MESSAGE_ATOM_VAR'
+t_DECLARE_NET_MESSAGE_END = r'DECLARE_NET_MESSAGE_END'
 
-p_lexc.tokens.append(tokens_packet)
+reserved.update(reserved_packet)
+tokens += reserved_packet.values()
+
+lexer=lex.lex()
