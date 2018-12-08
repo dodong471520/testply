@@ -25,6 +25,7 @@ Unused terminals:
     PRINTF
     ELSE
     STRUCT
+    STRING_LITERAL
     INT
     DOUBLE
     FLOAT
@@ -33,13 +34,15 @@ Unused terminals:
 
 Grammar
 
-Rule 0     S' -> packet
-Rule 1     packet -> packet_begin packet_vars packet_end
-Rule 2     packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID COMMA STRING_LITERAL RPAREN
-Rule 3     packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN
-Rule 4     packet_vars -> packet_var
-Rule 5     packet_vars -> packet_vars packet_var
-Rule 6     packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN
+Rule 0     S' -> packets
+Rule 1     packets -> packet
+Rule 2     packets -> packets packet
+Rule 3     packet -> packet_begin packet_vars packet_end
+Rule 4     packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN
+Rule 5     packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN
+Rule 6     packet_vars -> packet_var
+Rule 7     packet_vars -> packet_vars packet_var
+Rule 8     packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN
 
 Terminals, with rules where they appear
 
@@ -47,11 +50,11 @@ ASSIGN               :
 BREAK                : 
 CASE                 : 
 CHAR                 : 
-COMMA                : 2 2 3 6
+COMMA                : 4 5 8
 CONTINUE             : 
-DECLARE_NET_MESSAGE_ATOM_VAR : 6
-DECLARE_NET_MESSAGE_BEGIN : 2
-DECLARE_NET_MESSAGE_END : 3
+DECLARE_NET_MESSAGE_ATOM_VAR : 8
+DECLARE_NET_MESSAGE_BEGIN : 4
+DECLARE_NET_MESSAGE_END : 5
 DIVIDE               : 
 DO                   : 
 DOUBLE               : 
@@ -59,11 +62,11 @@ ELSE                 :
 EQUAL                : 
 FLOAT                : 
 FOR                  : 
-ID                   : 2 2 3 3 6 6
+ID                   : 4 4 5 5 8 8
 IF                   : 
 INT                  : 
 LEFTBRACE            : 
-LPAREN               : 2 3 6
+LPAREN               : 4 5 8
 MINUS                : 
 MULT                 : 
 NUMBER               : 
@@ -71,10 +74,10 @@ PLUS                 :
 PRINTF               : 
 RETURN               : 
 RIGHTBRACE           : 
-RPAREN               : 2 3 6
+RPAREN               : 4 5 8
 SCANF                : 
 SEMICOLON            : 
-STRING_LITERAL       : 2
+STRING_LITERAL       : 
 STRUCT               : 
 SWITCH               : 
 UNION                : 
@@ -83,216 +86,230 @@ error                :
 
 Nonterminals, with rules where they appear
 
-packet               : 0
-packet_begin         : 1
-packet_end           : 1
-packet_var           : 4 5
-packet_vars          : 1 5
+packet               : 1 2
+packet_begin         : 3
+packet_end           : 3
+packet_var           : 6 7
+packet_vars          : 3 7
+packets              : 2 0
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . packet
-    (1) packet -> . packet_begin packet_vars packet_end
-    (2) packet_begin -> . DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID COMMA STRING_LITERAL RPAREN
+    (0) S' -> . packets
+    (1) packets -> . packet
+    (2) packets -> . packets packet
+    (3) packet -> . packet_begin packet_vars packet_end
+    (4) packet_begin -> . DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN
 
     DECLARE_NET_MESSAGE_BEGIN shift and go to state 1
 
-    packet_begin                   shift and go to state 2
+    packets                        shift and go to state 2
+    packet_begin                   shift and go to state 4
     packet                         shift and go to state 3
 
 state 1
 
-    (2) packet_begin -> DECLARE_NET_MESSAGE_BEGIN . LPAREN ID COMMA ID COMMA STRING_LITERAL RPAREN
+    (4) packet_begin -> DECLARE_NET_MESSAGE_BEGIN . LPAREN ID COMMA ID RPAREN
 
-    LPAREN          shift and go to state 4
+    LPAREN          shift and go to state 5
 
 
 state 2
 
-    (1) packet -> packet_begin . packet_vars packet_end
-    (4) packet_vars -> . packet_var
-    (5) packet_vars -> . packet_vars packet_var
-    (6) packet_var -> . DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN
+    (0) S' -> packets .
+    (2) packets -> packets . packet
+    (3) packet -> . packet_begin packet_vars packet_end
+    (4) packet_begin -> . DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN
 
-    DECLARE_NET_MESSAGE_ATOM_VAR shift and go to state 7
+    DECLARE_NET_MESSAGE_BEGIN shift and go to state 1
 
-    packet_var                     shift and go to state 5
-    packet_vars                    shift and go to state 6
+    packet_begin                   shift and go to state 4
+    packet                         shift and go to state 6
 
 state 3
 
-    (0) S' -> packet .
+    (1) packets -> packet .
 
+    DECLARE_NET_MESSAGE_BEGIN reduce using rule 1 (packets -> packet .)
+    $end            reduce using rule 1 (packets -> packet .)
 
 
 state 4
 
-    (2) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN . ID COMMA ID COMMA STRING_LITERAL RPAREN
+    (3) packet -> packet_begin . packet_vars packet_end
+    (6) packet_vars -> . packet_var
+    (7) packet_vars -> . packet_vars packet_var
+    (8) packet_var -> . DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN
 
-    ID              shift and go to state 8
+    DECLARE_NET_MESSAGE_ATOM_VAR shift and go to state 9
 
+    packet_var                     shift and go to state 7
+    packet_vars                    shift and go to state 8
 
 state 5
 
-    (4) packet_vars -> packet_var .
+    (4) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN . ID COMMA ID RPAREN
 
-    DECLARE_NET_MESSAGE_END reduce using rule 4 (packet_vars -> packet_var .)
-    DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 4 (packet_vars -> packet_var .)
+    ID              shift and go to state 10
 
 
 state 6
 
-    (1) packet -> packet_begin packet_vars . packet_end
-    (5) packet_vars -> packet_vars . packet_var
-    (3) packet_end -> . DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN
-    (6) packet_var -> . DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN
+    (2) packets -> packets packet .
 
-    DECLARE_NET_MESSAGE_END shift and go to state 11
-    DECLARE_NET_MESSAGE_ATOM_VAR shift and go to state 7
+    DECLARE_NET_MESSAGE_BEGIN reduce using rule 2 (packets -> packets packet .)
+    $end            reduce using rule 2 (packets -> packets packet .)
 
-    packet_var                     shift and go to state 9
-    packet_end                     shift and go to state 10
 
 state 7
 
-    (6) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR . LPAREN ID COMMA ID RPAREN
+    (6) packet_vars -> packet_var .
 
-    LPAREN          shift and go to state 12
+    DECLARE_NET_MESSAGE_END reduce using rule 6 (packet_vars -> packet_var .)
+    DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 6 (packet_vars -> packet_var .)
 
 
 state 8
 
-    (2) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID . COMMA ID COMMA STRING_LITERAL RPAREN
+    (3) packet -> packet_begin packet_vars . packet_end
+    (7) packet_vars -> packet_vars . packet_var
+    (5) packet_end -> . DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN
+    (8) packet_var -> . DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN
 
-    COMMA           shift and go to state 13
+    DECLARE_NET_MESSAGE_END shift and go to state 13
+    DECLARE_NET_MESSAGE_ATOM_VAR shift and go to state 9
 
+    packet_var                     shift and go to state 11
+    packet_end                     shift and go to state 12
 
 state 9
 
-    (5) packet_vars -> packet_vars packet_var .
-
-    DECLARE_NET_MESSAGE_END reduce using rule 5 (packet_vars -> packet_vars packet_var .)
-    DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 5 (packet_vars -> packet_vars packet_var .)
-
-
-state 10
-
-    (1) packet -> packet_begin packet_vars packet_end .
-
-    $end            reduce using rule 1 (packet -> packet_begin packet_vars packet_end .)
-
-
-state 11
-
-    (3) packet_end -> DECLARE_NET_MESSAGE_END . LPAREN ID COMMA ID RPAREN
+    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR . LPAREN ID COMMA ID RPAREN
 
     LPAREN          shift and go to state 14
 
 
+state 10
+
+    (4) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID . COMMA ID RPAREN
+
+    COMMA           shift and go to state 15
+
+
+state 11
+
+    (7) packet_vars -> packet_vars packet_var .
+
+    DECLARE_NET_MESSAGE_END reduce using rule 7 (packet_vars -> packet_vars packet_var .)
+    DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 7 (packet_vars -> packet_vars packet_var .)
+
+
 state 12
 
-    (6) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN . ID COMMA ID RPAREN
+    (3) packet -> packet_begin packet_vars packet_end .
 
-    ID              shift and go to state 15
+    DECLARE_NET_MESSAGE_BEGIN reduce using rule 3 (packet -> packet_begin packet_vars packet_end .)
+    $end            reduce using rule 3 (packet -> packet_begin packet_vars packet_end .)
 
 
 state 13
 
-    (2) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA . ID COMMA STRING_LITERAL RPAREN
+    (5) packet_end -> DECLARE_NET_MESSAGE_END . LPAREN ID COMMA ID RPAREN
 
-    ID              shift and go to state 16
+    LPAREN          shift and go to state 16
 
 
 state 14
 
-    (3) packet_end -> DECLARE_NET_MESSAGE_END LPAREN . ID COMMA ID RPAREN
+    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN . ID COMMA ID RPAREN
 
     ID              shift and go to state 17
 
 
 state 15
 
-    (6) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID . COMMA ID RPAREN
+    (4) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA . ID RPAREN
 
-    COMMA           shift and go to state 18
+    ID              shift and go to state 18
 
 
 state 16
 
-    (2) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID . COMMA STRING_LITERAL RPAREN
+    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN . ID COMMA ID RPAREN
 
-    COMMA           shift and go to state 19
+    ID              shift and go to state 19
 
 
 state 17
 
-    (3) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID . COMMA ID RPAREN
+    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID . COMMA ID RPAREN
 
     COMMA           shift and go to state 20
 
 
 state 18
 
-    (6) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA . ID RPAREN
+    (4) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID . RPAREN
 
-    ID              shift and go to state 21
+    RPAREN          shift and go to state 21
 
 
 state 19
 
-    (2) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID COMMA . STRING_LITERAL RPAREN
+    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID . COMMA ID RPAREN
 
-    STRING_LITERAL  shift and go to state 22
+    COMMA           shift and go to state 22
 
 
 state 20
 
-    (3) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA . ID RPAREN
+    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA . ID RPAREN
 
     ID              shift and go to state 23
 
 
 state 21
 
-    (6) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID . RPAREN
+    (4) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN .
 
-    RPAREN          shift and go to state 24
+    DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 4 (packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN .)
 
 
 state 22
 
-    (2) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID COMMA STRING_LITERAL . RPAREN
+    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA . ID RPAREN
 
-    RPAREN          shift and go to state 25
+    ID              shift and go to state 24
 
 
 state 23
 
-    (3) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID . RPAREN
+    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID . RPAREN
 
-    RPAREN          shift and go to state 26
+    RPAREN          shift and go to state 25
 
 
 state 24
 
-    (6) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .
+    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID . RPAREN
 
-    DECLARE_NET_MESSAGE_END reduce using rule 6 (packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .)
-    DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 6 (packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .)
+    RPAREN          shift and go to state 26
 
 
 state 25
 
-    (2) packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID COMMA STRING_LITERAL RPAREN .
+    (8) packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .
 
-    DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 2 (packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID COMMA STRING_LITERAL RPAREN .)
+    DECLARE_NET_MESSAGE_END reduce using rule 8 (packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .)
+    DECLARE_NET_MESSAGE_ATOM_VAR reduce using rule 8 (packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN .)
 
 
 state 26
 
-    (3) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN .
+    (5) packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN .
 
-    $end            reduce using rule 3 (packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN .)
+    DECLARE_NET_MESSAGE_BEGIN reduce using rule 5 (packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN .)
+    $end            reduce using rule 5 (packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN .)
 

@@ -1,5 +1,7 @@
 import ply.lex as lex
-#
+import ply.yacc as yacc
+import sys
+import re
 # List of token names.   This is always required
 tokens = [
    'NUMBER',
@@ -119,3 +121,19 @@ def t_COMMENT(t):
 #    tok = lexer.token()
 #    if not tok: break      # No more input
 #    print("This is a token: (" , tok.type,", ",tok.value,")")
+
+REPLACE_STR = r'##{key}##|{key}##|##{key}|\b{key}\b'
+def format_template(content,*keyvalue):
+  content=content[1:]
+  key_value_len=len(keyvalue)/2
+  for index in range(key_value_len):
+      key=keyvalue[index*2+0]
+      value=keyvalue[index*2+1]
+      re_str=REPLACE_STR.format(key=key)
+      content=re.sub(re_str,value,content)
+  return content
+
+def add_reserved(var_toaken,var_literal):
+  globals()['t_'+var_toaken]=var_literal
+  reserved[var_toaken]=var_toaken
+  tokens.append(var_toaken)

@@ -5,9 +5,9 @@ _tabversion = '3.8'
 
 _lr_method = 'LALR'
 
-_lr_signature = '583354FFBE3683EE51AD2DD9550B2FB9'
+_lr_signature = 'CA34811013284DDDD93103D374898CCC'
     
-_lr_action_items = {'DECLARE_NET_MESSAGE_BEGIN':([0,],[1,]),'RPAREN':([21,22,23,],[24,25,26,]),'STRING_LITERAL':([19,],[22,]),'DECLARE_NET_MESSAGE_ATOM_VAR':([2,5,6,9,24,25,],[7,-4,7,-5,-6,-2,]),'LPAREN':([1,7,11,],[4,12,14,]),'COMMA':([8,15,16,17,],[13,18,19,20,]),'DECLARE_NET_MESSAGE_END':([5,6,9,24,],[-4,11,-5,-6,]),'ID':([4,12,13,14,18,20,],[8,15,16,17,21,23,]),'$end':([3,10,26,],[0,-1,-3,]),}
+_lr_action_items = {'DECLARE_NET_MESSAGE_BEGIN':([0,2,3,6,12,26,],[1,1,-1,-2,-3,-5,]),'RPAREN':([18,23,24,],[21,25,26,]),'DECLARE_NET_MESSAGE_ATOM_VAR':([4,7,8,11,21,25,],[9,-6,9,-7,-4,-8,]),'LPAREN':([1,9,13,],[5,14,16,]),'COMMA':([10,17,19,],[15,20,22,]),'DECLARE_NET_MESSAGE_END':([7,8,11,25,],[-6,13,-7,-8,]),'ID':([5,14,15,16,20,22,],[10,17,18,19,23,24,]),'$end':([2,3,6,12,26,],[0,-1,-2,-3,-5,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'packet_var':([2,6,],[5,9,]),'packet_end':([6,],[10,]),'packet_vars':([2,],[6,]),'packet_begin':([0,],[2,]),'packet':([0,],[3,]),}
+_lr_goto_items = {'packet_var':([4,8,],[7,11,]),'packet_vars':([4,],[8,]),'packets':([0,],[2,]),'packet':([0,2,],[3,6,]),'packet_end':([8,],[12,]),'packet_begin':([0,2,],[4,4,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -25,11 +25,13 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> packet","S'",1,None,None,None),
-  ('packet -> packet_begin packet_vars packet_end','packet',3,'p_packet','parsepacket.py',226),
-  ('packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID COMMA STRING_LITERAL RPAREN','packet_begin',8,'p_packet_begin','parsepacket.py',231),
-  ('packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN','packet_end',6,'p_packet_end','parsepacket.py',235),
-  ('packet_vars -> packet_var','packet_vars',1,'p_packet_vars_2','parsepacket.py',238),
-  ('packet_vars -> packet_vars packet_var','packet_vars',2,'p_packet_vars_1','parsepacket.py',241),
-  ('packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN','packet_var',6,'p_packet_var','parsepacket.py',245),
+  ("S' -> packets","S'",1,None,None,None),
+  ('packets -> packet','packets',1,'p_packets_1','parsepacket.py',221),
+  ('packets -> packets packet','packets',2,'p_packets_2','parsepacket.py',224),
+  ('packet -> packet_begin packet_vars packet_end','packet',3,'p_packet','parsepacket.py',228),
+  ('packet_begin -> DECLARE_NET_MESSAGE_BEGIN LPAREN ID COMMA ID RPAREN','packet_begin',6,'p_packet_begin','parsepacket.py',233),
+  ('packet_end -> DECLARE_NET_MESSAGE_END LPAREN ID COMMA ID RPAREN','packet_end',6,'p_packet_end','parsepacket.py',236),
+  ('packet_vars -> packet_var','packet_vars',1,'p_packet_vars_2','parsepacket.py',239),
+  ('packet_vars -> packet_vars packet_var','packet_vars',2,'p_packet_vars_1','parsepacket.py',242),
+  ('packet_var -> DECLARE_NET_MESSAGE_ATOM_VAR LPAREN ID COMMA ID RPAREN','packet_var',6,'p_packet_var','parsepacket.py',246),
 ]
