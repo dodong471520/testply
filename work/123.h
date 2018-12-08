@@ -1,3 +1,5 @@
+"dsafsafsa"
+//---------Declare Packet CLHandShake
 namespace Messages 
 { 
     class CLHandShake : public IMessage 
@@ -55,30 +57,45 @@ namespace Messages
     }; 
 }; 
 using namespace Messages;
+//---------Declare Packet CLHandShake End
 
-MESSAGE_NAME::MESSAGE_NAME()
+//---------Implement Packet CLHandShake
+CLHandShake::CLHandShake()
 {
 };
-MESSAGE_NAME::~MESSAGE_NAME()
+CLHandShake::~CLHandShake()
 {
 }
-uint32 MESSAGE_NAME::Process(Connector *pConnector) 
+uint32 CLHandShake::Process(Connector *pConnector) 
 { 
-    __GUARD__ return MESSAGE_NAME##Dispatch::Process(this, pConnector); 
+    __GUARD__ return CLHandShakeDispatch::Process(this, pConnector); 
     __UNGUARD__ return FALSE; 
 }
-uint32 MESSAGE_NAME::GetMsgSize() const
+uint32 CLHandShake::GetMsgSize() const
 {
     uint32 size=0;
     size+=sizeof(int32);
     size+=sizeof(int8);
     return size;
 }
-uint32 MESSAGE_NAME##Factory::GetMessageMaxSize() const
+uint32 CLHandShakeFactory::GetMessageMaxSize() const
 {
     uint32 size=0;
 	size+=sizeof(int32);
 	size+=sizeof(int8);
 	return size;
 }
+BOOL CLHandShake::Recieve(RecieveStream &iStream) 
+{ 
+    iStream.Reci((char *) (&m_MagicNum), sizeof(m_MagicNum));
+    iStream.Reci((char *) (&m_QuickMark), sizeof(m_QuickMark));
+    return TRUE;
+}
+BOOL CLHandShake::Send(SendStream &oStream) const 
+{ 
+    iStream.Reci((char *) (&m_MagicNum), sizeof(m_MagicNum));
+    iStream.Reci((char *) (&m_QuickMark), sizeof(m_QuickMark));
+    return TRUE;
+}
+//---------Implement Packet CLHandShake End
 

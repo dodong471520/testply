@@ -16,6 +16,7 @@ tokens = [
    'RIGHTBRACE',
    'ASSIGN',
    'EQUAL',
+   'STRING_LITERAL',
 ]
 reserved={
     'while' : 'WHILE',
@@ -69,6 +70,7 @@ t_IF = r'if'
 t_DO = r'do'
 t_FLOAT = 'float'
 t_DOUBLE = r'double'
+t_STRING_LITERAL = r'"(\\.|[^\\"])*"'
 # A regular expression rule with some action code
 #
 def t_ID(t):
@@ -100,7 +102,7 @@ def t_error(t):
   t.lexer.skip(1)
 
 def t_COMMENT(t):
-    r'//.*|\#.*'
+    r'//.*'
     pass
 # No return value. Token discarded
 # Build the lexer
