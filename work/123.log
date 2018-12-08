@@ -1,0 +1,63 @@
+
+namespace Messages 
+{ 
+    class CLHandShake : public IMessage 
+    { 
+    public: 
+        CLHandShake();	
+        virtual ~CLHandShake();
+        virtual BOOL	Recieve(RecieveStream &iStream); 
+        virtual BOOL	Send(SendStream &oStream) const; 
+        virtual uint32	Process(Connector *pConnector); 
+        virtual uint32 GetMsgSize() const;
+        virtual MSG_ID GetMsgID() const 
+        { 
+            return MESSAGE_CL_CONNECT;
+        }
+
+    private: 
+        int32	m_MagicNum; 
+    public: 
+        const int32 GetMagicNum() const
+        { 
+            return m_MagicNum; 
+        } 
+        void SetMagicNum(const int32 val)
+        { 
+            m_MagicNum = val; 
+        }
+
+    private: 
+        int8	m_QuickMark; 
+    public: 
+        const int8 GetQuickMark() const
+        { 
+            return m_QuickMark; 
+        } 
+        void SetQuickMark(const int8 val)
+        { 
+            m_QuickMark = val; 
+        }
+
+    }; 
+    class CLHandShakeFactory : public MessageFactory 
+    { 
+    public: 
+            IMessage *CreateMessage() 
+            { 
+                return new CLHandShake(); 
+            } 
+            MSG_ID GetMsgID() const 
+            { 
+                return MESSAGE_CL_CONNECT; 
+            }
+            uint32 GetMessageMaxSize() const;
+    }; 
+    class   CLHandShakeDispatch 
+    { 
+    public: 
+        static uint32	Process(CLHandShake *pMessage, Connector *pConnector); 
+    }; 
+}; 
+using namespace Messages;
+
