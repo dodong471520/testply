@@ -261,7 +261,7 @@ def p_error(p):
     parser.errok()
     return tok
 # Build the parser
-parser = yacc.yacc(tabmodule='packet',debug=True)
+parser = yacc.yacc(tabmodule='tmp_parse_packet',debug=True)
 input_str = sys.stdin.read()
 result = parser.parse(input_str)
 
