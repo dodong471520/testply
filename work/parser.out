@@ -2,35 +2,86 @@ Created by PLY version 3.9 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    DO
-    RETURN
-    SCANF
-    EQUAL
-    CHAR
-    WHILE
+    VOID
+    LBRACKET
     MINUS
-    MULT
-    CASE
-    SEMICOLON
-    SWITCH
+    LONG
     PLUS
-    IF
-    ASSIGN
-    LEFTBRACE
+    COLON
+    GT
+    RBRACE
+    ENUM
+    PERIOD
+    GE
+    ICONST
+    ARROW
+    DOUBLE
+    MINUSEQUAL
+    TIMESEQUAL
+    OR
+    SHORT
+    RETURN
+    RSHIFTEQUAL
+    STATIC
+    SIZEOF
+    FCONST
+    UNSIGNED
+    UNION
     DIVIDE
     FOR
-    UNION
-    RIGHTBRACE
-    NUMBER
-    PRINTF
+    PLUSPLUS
+    EQUALS
     ELSE
-    STRUCT
-    STRING_LITERAL
+    EQ
+    AND
+    TYPEID
+    LBRACE
     INT
-    DOUBLE
-    FLOAT
-    BREAK
+    SIGNED
     CONTINUE
+    NOT
+    OREQUAL
+    MOD
+    RSHIFT
+    DEFAULT
+    CHAR
+    WHILE
+    DIVEQUAL
+    EXTERN
+    CASE
+    LAND
+    REGISTER
+    MODEQUAL
+    NE
+    SCONST
+    SWITCH
+    PLUSEQUAL
+    ELLIPSIS
+    CONDOP
+    BREAK
+    VOLATILE
+    ANDEQUAL
+    DO
+    LNOT
+    CONST
+    LOR
+    LSHIFT
+    GOTO
+    LE
+    SEMI
+    LT
+    CCONST
+    TYPEDEF
+    XOR
+    AUTO
+    TIMES
+    MINUSMINUS
+    IF
+    STRUCT
+    FLOAT
+    XOREQUAL
+    LSHIFTEQUAL
+    RBRACKET
 
 Grammar
 
@@ -48,42 +99,93 @@ Rule 10    packet_scopes -> ID
 
 Terminals, with rules where they appear
 
-ASSIGN               : 
+AND                  : 
+ANDEQUAL             : 
+ARROW                : 
+AUTO                 : 
 BREAK                : 
 CASE                 : 
+CCONST               : 
 CHAR                 : 
+COLON                : 
 COMMA                : 4 8 9
+CONDOP               : 
+CONST                : 
 CONTINUE             : 
 DECLARE_NET_MESSAGE_ATOM_VAR : 8
 DECLARE_NET_MESSAGE_BEGIN : 4
 DECLARE_NET_MESSAGE_END : 5
+DEFAULT              : 
+DIVEQUAL             : 
 DIVIDE               : 
 DO                   : 
 DOUBLE               : 
+ELLIPSIS             : 
 ELSE                 : 
-EQUAL                : 
+ENUM                 : 
+EQ                   : 
+EQUALS               : 
+EXTERN               : 
+FCONST               : 
 FLOAT                : 
 FOR                  : 
+GE                   : 
+GOTO                 : 
+GT                   : 
+ICONST               : 
 ID                   : 4 4 8 8 9 10
 IF                   : 
 INT                  : 
-LEFTBRACE            : 
+LAND                 : 
+LBRACE               : 
+LBRACKET             : 
+LE                   : 
+LNOT                 : 
+LONG                 : 
+LOR                  : 
 LPAREN               : 4 5 8
+LSHIFT               : 
+LSHIFTEQUAL          : 
+LT                   : 
 MINUS                : 
-MULT                 : 
-NUMBER               : 
+MINUSEQUAL           : 
+MINUSMINUS           : 
+MOD                  : 
+MODEQUAL             : 
+NE                   : 
+NOT                  : 
+OR                   : 
+OREQUAL              : 
+PERIOD               : 
 PLUS                 : 
-PRINTF               : 
+PLUSEQUAL            : 
+PLUSPLUS             : 
+RBRACE               : 
+RBRACKET             : 
+REGISTER             : 
 RETURN               : 
-RIGHTBRACE           : 
 RPAREN               : 4 5 8
-SCANF                : 
-SEMICOLON            : 
-STRING_LITERAL       : 
+RSHIFT               : 
+RSHIFTEQUAL          : 
+SCONST               : 
+SEMI                 : 
+SHORT                : 
+SIGNED               : 
+SIZEOF               : 
+STATIC               : 
 STRUCT               : 
 SWITCH               : 
+TIMES                : 
+TIMESEQUAL           : 
+TYPEDEF              : 
+TYPEID               : 
 UNION                : 
+UNSIGNED             : 
+VOID                 : 
+VOLATILE             : 
 WHILE                : 
+XOR                  : 
+XOREQUAL             : 
 error                : 
 
 Nonterminals, with rules where they appear

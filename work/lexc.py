@@ -20,9 +20,16 @@ def format_template(content,*keyvalue):
       content=re.sub(re_str,value,content)
   return content
 
-def add_reserved(var_toaken,var_literal):
+def t_comment(t):
+    r'/\*(.|\n)*?\*/|//.*'
+    t.lexer.lineno += t.value.count('\n')
+
+tokens = list(tokens)
+
+def add_reserved(var_token,var_literal):
   global tokens
   global reserved_map
-  globals()['t_'+var_toaken]=var_literal
-  tokens += (var_toaken)
-  reserved_map[var_literal]=var_toaken
+  tokens.append(var_token)
+  reserved_map[var_literal]=var_token
+  # globals()['t_'+var_token]=var_literal
+  # print(globals())

@@ -2,8 +2,8 @@ from lexc import *
 add_reserved('DECLARE_NET_MESSAGE_BEGIN','DECLARE_NET_MESSAGE_BEGIN')
 add_reserved('DECLARE_NET_MESSAGE_ATOM_VAR','DECLARE_NET_MESSAGE_ATOM_VAR')
 add_reserved('DECLARE_NET_MESSAGE_END','DECLARE_NET_MESSAGE_END')
+# print(333,globals())
 lex.lex()
-
 # declare packet
 TEMPLATE_DECLARE_PACKET_BEGIN = '''
 namespace Messages
@@ -150,7 +150,7 @@ class Packet:
         self.VarList=[]
         self.ScopeList=[]
     def ToDefine(self,index):
-        return "\t\t"+self.PacketName+"\t\t\t=\t"+str(index)+",\n"
+        return format_template(message_define_var,"MESSAGE_ID",self.PacketID,"id",str(index))
     def ToDeclare(self):
         header_name = re.sub(r'[A-Z]',lambda x:"_"+x.group(0),self.PacketName)
         log = "//---------Declare Packet " + self.PacketName  + "\n"
@@ -289,8 +289,8 @@ message_define_end='''
 
 #endif
 '''
-message_packet_define='''
-	MESSAGE_NONE					= 0,
+message_define_var='''
+	    MESSAGE_ID                                                                      = id ,
 '''
 message_define_str=message_define_begin
 message_define_index=0
